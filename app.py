@@ -4,7 +4,7 @@
 # Résultat: LDTA (m) + détail des corrections
 # Conçu pour tourner localement dans Pythonista (iOS), sans Streamlit.
 
-import ui
+
 
 # -----------------------------
 # Données tables (ERJ-145)
