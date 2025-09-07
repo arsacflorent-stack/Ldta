@@ -1,17 +1,23 @@
 import streamlit as st
 
 # -----------------------------
-# Tables LDTA (extraites GP-7924 ERJ-145)
+# Exemple de tables LDTA (GP-7924 ERJ-145)
 # -----------------------------
 tables = {
     ("CAT I","TR","FLAP 22","NO ICE"): {
-        6: {"REF":1068,"WEIGHT":{"below":-45,"above":47},"ALT":32,"TEMP":{"belowISA":-9,"aboveISA":25},
-            "WIND":{"head":-21,"tail":112},"SLOPE":{"up":-6,"down":178},"VAP":119,"REV":142,"OVERWEIGHT":{"per1000kg":92}},
-        5: {"REF":1230,"WEIGHT":{"below":-57,"above":59},"ALT":44,"TEMP":{"belowISA":-12,"aboveISA":39},
-            "WIND":{"head":-26,"tail":165},"SLOE":{"up":-8,"down":217},"VAP":140,"REV":535,"OVERWEIGHT":{"per1000kg":92}},
-        # ⚠️ à compléter avec toutes les lignes comme dans le PDF GP-7924
+        6: {"REF":1068,"WEIGHT":{"below":-45,"above":47},"ALT":32,
+            "TEMP":{"belowISA":-9,"aboveISA":25},
+            "WIND":{"head":-21,"tail":112},
+            "SLOPE":{"up":-6,"down":178},
+            "VAP":119,"REV":142},
+        5: {"REF":1230,"WEIGHT":{"below":-57,"above":59},"ALT":44,
+            "TEMP":{"belowISA":-12,"aboveISA":39},
+            "WIND":{"head":-26,"tail":165},
+            "SLOPE":{"up":-8,"down":217},
+            "VAP":140,"REV":535},
+        # ⚠️ compléter avec toutes les lignes du manuel GP-7924
     },
-    # ... ajouter les autres combinaisons CAT/FLAP/TR/ICE
+    # ⚠️ compléter aussi les autres configurations CAT/FLAP/TR/ICE
 }
 
 def get_table(cat, tr, flap, ice_state):
@@ -21,7 +27,8 @@ def get_table(cat, tr, flap, ice_state):
         key = (cat, "NO TR", flap, "ICE" if ice_state else "NO ICE")
     return tables.get(key)
 
-def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, isa_dev, wind_kt, slope_pct, vap_over):
+def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc,
+                 weight, alt_ft, isa_dev, wind_kt, slope_pct, vap_over):
     tr = "TR" if tr_enabled else "NO TR"
     table = get_table(cat, tr, flap, ice)
     if not table or rwycc not in table:
@@ -32,7 +39,7 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, i
     details = [f"REF table: {ref} m"]
     total = ref
 
-    # Poids
+    # Correction poids
     delta_1000 = (weight - 18000) / 1000.0
     if delta_1000 < 0:
         corr_w = row["WEIGHT"]["below"] * abs(delta_1000)
@@ -41,13 +48,13 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, i
     total += corr_w
     details.append(f"Poids: {corr_w:+.0f} m")
 
-    # Altitude
+    # Correction altitude
     alt_1000 = alt_ft / 1000.0
     corr_alt = row["ALT"] * alt_1000
     total += corr_alt
     details.append(f"Altitude: {corr_alt:+.0f} m")
 
-    # Température (ISA deviation)
+    # Correction température (ISA deviation)
     if isa_dev < 0:
         corr_temp = (abs(isa_dev) / 5.0) * row["TEMP"]["belowISA"]
     else:
@@ -55,7 +62,7 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, i
     total += corr_temp
     details.append(f"T° ISA dev: {corr_temp:+.0f} m")
 
-    # Vent
+    # Correction vent
     if wind_kt >= 0:
         corr_wind = (wind_kt / 5.0) * row["WIND"]["head"]
     else:
@@ -63,7 +70,7 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, i
     total += corr_wind
     details.append(f"Vent: {corr_wind:+.0f} m")
 
-    # Pente
+    # Correction pente
     if slope_pct >= 0:
         corr_slope = slope_pct * row["SLOPE"]["up"]
     else:
@@ -71,18 +78,22 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, i
     total += corr_slope
     details.append(f"Pente: {corr_slope:+.0f} m")
 
-    # Survitesse au seuil
+    # Correction survitesse
     corr_vap = (vap_over / 5.0) * row["VAP"]
     total += corr_vap
     details.append(f"Survitesse: {corr_vap:+.0f} m")
 
-    # Inverseurs inop
+    # Correction inverseurs inop
     if tr == "TR" and row["REV"] is not None and revs_inop > 0:
         corr_rev = revs_inop * row["REV"]
         total += corr_rev
         details.append(f"Inverseurs INOP: {corr_rev:+.0f} m")
 
-    return total, details
+    # Application du facteur réglementaire 1.15
+    final = total * 1.15
+    details.append("Facteur réglementaire 1.15 appliqué")
+
+    return final, details
 
 # -----------------------------
 # Interface Streamlit
@@ -108,11 +119,12 @@ vap_over = st.number_input("Survitesse VREF+ (kt)", 0, 20, 0)
 
 # Calcul
 if st.button("Calculer LDTA"):
-    total, details = compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc, weight, alt_ft, isa_dev, wind_kt, slope_pct, vap_over)
+    total, details = compute_ldta(cat, flap, tr_enabled, revs_inop, ice,
+                                  rwycc, weight, alt_ft, isa_dev, wind_kt, slope_pct, vap_over)
     if total is None:
         st.error("⚠️ Configuration non couverte par les tables")
     else:
-        st.success(f"LDTA: {total:.0f} m")
+        st.success(f"LDTA (avec marge 1.15): {total:.0f} m")
         with st.expander("Détail des corrections"):
             for d in details:
                 st.write("•", d)
