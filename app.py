@@ -5,7 +5,7 @@ st.title("LDTA – Embraer 145")
 st.write("Calculateur basé sur le GP-7924. Version en cours de construction.")
 
 # --- Tables LDTA (à compléter progressivement) ---
- tables = {
+ { tables = {
     ("CAT I","TR","FLAP 22","NO ICE"): { ... },
     ("CAT I","NO TR","FLAP 22","NO ICE"): { ... },
     ("CAT I","TR","FLAP 22","ICE"): { ... },
