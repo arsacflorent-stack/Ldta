@@ -2,9 +2,9 @@ import streamlit as st
 
 st.set_page_config(page_title="LDTA ERJ-145", layout="centered")
 st.title("LDTA – Embraer 145")
-st.write("Calculateur basé sur le GP-7924. Version en cours de construction.")
+st.write("Calculateur basé sur le GP-7924. Version de test (tables partielles).")
 
-# --- Tables LDTA (exemple, à compléter) ---
+# --- Tables LDTA (exemple à compléter plus tard avec toutes les configurations) ---
 tables = {
     ("CAT I","TR","FLAP 22","NO ICE"): {
         6: {"REF":1068,"WEIGHT":{"below":-45,"above":47},"ALT":32,
@@ -18,7 +18,10 @@ tables = {
             "SLOPE":{"up":-8,"down":217},
             "VAP":140,"REV":535,"OVERWEIGHT":{"per1000kg":92}},
     },
-}def get_table(cat, tr, flap, ice):
+}
+
+# --- Fonctions utilitaires ---
+def get_table(cat, tr, flap, ice):
     key = (cat, "TR" if tr else "NO TR", flap, "ICE" if ice else "NO ICE")
     return tables.get(key)
 
@@ -26,7 +29,7 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc,
                  weight, alt_ft, isa_dev, wind_kt, slope_pct, vap_over, overweight_mode):
     table = get_table(cat, tr_enabled, flap, ice)
     if not table or rwycc not in table:
-        return None, ["Configuration non couverte"]
+        return None, ["Configuration non couverte par les tables"]
 
     row = table[rwycc]
     ref = row["REF"]
@@ -36,7 +39,7 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc,
     # Poids
     delta_1000 = (weight - 18000) / 1000.0
     if overweight_mode and weight > 18000:
-        details.append(f"Overweight: correction appliquée plus bas")
+        details.append("Overweight: correction appliquée plus bas")
     else:
         corr_w = row["WEIGHT"]["below"] * abs(delta_1000) if delta_1000 < 0 else row["WEIGHT"]["above"] * abs(delta_1000)
         total += corr_w
@@ -94,7 +97,9 @@ def compute_ldta(cat, flap, tr_enabled, revs_inop, ice, rwycc,
     details.append("Facteur réglementaire 1.15 appliqué")
 
     return final, details
-    st.header("Configuration")
+
+# --- Interface Streamlit ---
+st.header("Configuration")
 cat = st.selectbox("Catégorie", ["CAT I","CAT II"])
 flap = st.selectbox("Volets", ["FLAP 22","FLAP 45"])
 tr_enabled = st.checkbox("Avec inverseurs TR", value=True)
