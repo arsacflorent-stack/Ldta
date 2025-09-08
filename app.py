@@ -6,10 +6,7 @@ st.write("Calculateur basé sur le GP-7924. Version en cours de construction.")
 
 # --- Tables LDTA (à compléter progressivement) ---
 tables = {
-    ("CAT I","TR","FLAP 22","NO ICE"): { ... },
-    ("CAT I","NO TR","FLAP 22","NO ICE"): { ... },
-    ("CAT I","TR","FLAP 22","ICE"): { ... },
-    ("CAT I","NO TR","FLAP 22","ICE"): { ... }
+    
 
     ("CAT I","TR","FLAP 22","NO ICE"): {
         6: {"REF":1068,"WEIGHT":{"below":-45,"above":47},"ALT":32,
