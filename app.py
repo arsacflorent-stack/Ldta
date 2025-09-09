@@ -7,10 +7,88 @@ st.write("Calculateur basé sur le GP-7924. Version en cours de construction.")
 # --- Tables LDTA (à compléter progressivement) ---
  tables = {
 
-    ("CAT I","TR","FLAP 22","NO ICE"): { ... },
-    ("CAT I","NO TR","FLAP 22","NO ICE"): { ... },
-    ("CAT I","TR","FLAP 22","ICE"): { ... },
-    ("CAT I","NO TR","FLAP 22","ICE"): { ... }
+    # --- Tables LDTA (structure propre, à remplir progressivement) ---
+tables = {
+    # ======================
+    # CAT I - FLAP 22
+    # ======================
+
+    # --- NO ICE ---
+    ("CAT I","TR","FLAP 22","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT I","NO TR","FLAP 22","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # --- ICE ---
+    ("CAT I","TR","FLAP 22","ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT I","NO TR","FLAP 22","ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # ======================
+    # CAT I - FLAP 45
+    # ======================
+
+    # --- NO ICE ---
+    ("CAT I","TR","FLAP 45","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT I","NO TR","FLAP 45","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # --- ICE ---
+    ("CAT I","TR","FLAP 45","ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT I","NO TR","FLAP 45","ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # ======================
+    # CAT II - FLAP 22
+    # ======================
+
+    # --- NO ICE ---
+    ("CAT II","TR","FLAP 22","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT II","NO TR","FLAP 22","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # --- ICE ---
+    ("CAT II","TR","FLAP 22","ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT II","NO TR","FLAP 22","ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # ======================
+    # CAT II - FLAP 45
+    # ======================
+
+    # --- NO ICE ---
+    ("CAT II","TR","FLAP 45","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT II","NO TR","FLAP 45","NO ICE"): {
+        # RWYCC 6 -> 1
+    },
+
+    # --- ICE ---
+    ("CAT II","TR","FLAP 45","ICE"): {
+        # RWYCC 6 -> 1
+    },
+    ("CAT II","NO TR","FLAP 45","ICE"): {
+        # RWYCC 6 -> 1
+    },
+}
 }
     
 
